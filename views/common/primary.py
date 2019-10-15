@@ -3,7 +3,7 @@ import uuid
 from flask import request, g
 from views.common import api
 from init import client, Redis, sms, cos_sts
-from forms.common.main import SMSCodeForm
+from forms.common.primary import SMSCodeForm
 from models.HYModels.common import Images
 from plugins.HYplugins.common import ordinary
 from plugins.HYplugins.common.authorization import login, auth

@@ -4,7 +4,7 @@ from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
 from models.HYModels.user import Driver
-from forms.user import main as user_form
+from forms.user import primary as user_form
 
 
 @api.route('/sign_in/', methods=['POST'])

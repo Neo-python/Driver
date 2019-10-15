@@ -3,4 +3,4 @@ from flask import Blueprint
 
 api = Blueprint('user', __name__, url_prefix='/user')
 
-from views.user.main import *
+from views.user.primary import *
