@@ -45,6 +45,13 @@ def registered():
     :return:
     """
 
+    data = forms.RegisteredForm().validate_().data
+
+    data.pop('code')
+
+    Driver(**data).direct_commit_()
+
+    return result_format()
 
 
 @api.route('/driver/info/')
