@@ -15,9 +15,6 @@ def upload_url():
     genre = request.args.get('genre', default=None)
     suffix = request.args.get('suffix', default=None)
 
-    if not genre and not suffix:
-        raise ViewException(error_code=4005, message='<genre>图片用途类型或<suffix>图片文件类型,不能为空.')
-
     return core_api.upload_url(user_uuid=g.user.uuid, genre=genre, suffix=suffix)
 
 
