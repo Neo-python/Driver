@@ -1,5 +1,6 @@
 import time
 from flask import g
+from init import sms, Redis
 from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
@@ -67,6 +68,7 @@ def driver_info():
 def driver_info_edit():
     """驾驶员信息修改"""
     user = Driver.query.filter_by(uuid=g.user.uuid).first_or_404()
-    # form = user_form.FactoryEditForm(user=user).validate_()
-    # user.set_attrs(form.data).direct_update_()
-    # return result_format()
+    form = forms.DriverEditForm(user=user).validate_()
+    user.set_attrs(form.data).direct_update_()
+    Redis.delete(form.redis_key)
+    return result_format()
