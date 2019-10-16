@@ -4,7 +4,7 @@ from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
 from models.HYModels.user import Driver
-from forms.user import primary as user_form
+from forms import user as forms
 
 
 @api.route('/sign_in/', methods=['POST'])
@@ -44,6 +44,7 @@ def registered():
     注册完成 删除Redis中的短信验证码信息
     :return:
     """
+
 
 
 @api.route('/driver/info/')
