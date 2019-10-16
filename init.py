@@ -10,6 +10,10 @@ from plugins.HYplugins import wechat
 from sts.sts import Sts
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
+from plugins.HYplugins.core.primary import CoreApi
+
+# core
+core_api = CoreApi()
 
 # 短信
 sms = SMS(app_id=config.SMS_APP_ID, app_key=config.SMS_APP_KEY)
@@ -22,8 +26,11 @@ cos_config = CosConfig(Region=config.region, SecretId=config.SecretId, SecretKey
 client = CosS3Client(cos_config)
 # cos token
 cos_sts = Sts(config.sts_config)
+""" 已废弃-> HYcore
 # 微信
 wechat_api = wechat.WechatApi(app_id=config.APP_ID, app_secret=config.APP_SECRET)
+"""
+
 # redis
 pool = redis.ConnectionPool(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
 Redis = redis.StrictRedis(connection_pool=pool)
