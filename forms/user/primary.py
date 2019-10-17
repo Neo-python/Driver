@@ -16,7 +16,7 @@ class RegisteredForm(BaseForm, PhoneField, CodeField, DriverNameField, NumberPla
         if self.code.data == Redis.get(self.redis_key):
             return True
         else:
-            raise wtforms.ValidationError(message='code error')
+            raise wtforms.ValidationError(message='验证码错误')
 
 
 class DriverEditForm(BaseForm, PhoneField, DriverNameField, NumberPlateField):
@@ -36,6 +36,6 @@ class DriverEditForm(BaseForm, PhoneField, DriverNameField, NumberPlateField):
             if self.code.data == Redis.get(self.redis_key):
                 return True
             else:
-                raise wtforms.ValidationError(message='code error')
+                raise wtforms.ValidationError(message='验证码错误')
         else:
             return True
