@@ -4,41 +4,19 @@ from views.business import api
 from plugins.HYplugins.common.authorization import login
 
 
-@api.route('/driver/order/list/')
+@api.route('/factory/order/list/')
 @login()
-def driver_order_list():
-    """驾驶员订单列表
-    只展示已经处理完成的订单或已取消的订单
+def factory_order_list():
+    """厂家订单列表
+    司机可以接的订单列表
     :return:
     """
-    #
-    # schedule = request.args.get('schedule', type=int, default=None)
-    #
-    # page = request.args.get('page', default=1, type=int)
-    # limit = 10
-    #
-    # # 筛选当前用户数据
-    # query = DriverOrder.query.filter_by(user_id=g.user['id']).filter(DriverOrder.driver_schedule > 4)
-    #
-    # # 筛选订单进度
-    # if schedule:
-    #     query = query.filter(DriverOrder.driver_schedule == schedule)
-    #
-    # # 排序,进度最少,最新
-    # query = query.order_by(DriverOrder.driver_schedule, DriverOrder.id.desc())
-    #
-    # # 分页数据
-    # paginate = query.paginate(page=page, per_page=limit, error_out=True)
-    #
-    # # 序列化当前页数据
-    #
-    # items = [item.serialization(remove={'driver_schedule', 'images'},
-    #                             funcs=[('order_infos', tuple(), dict())]) for item in paginate.items]
-    #
-    # # 封装分页数据
-    # data = common.paginate_info(paginate=paginate, items=items)
-    #
-    # return common.result_format(data=data)
+
+
+@api.route('/order/accept/')
+@login()
+def order_accept():
+    """接受订单"""
 
 
 @api.route('/driver/order/checking/')
