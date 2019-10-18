@@ -11,3 +11,7 @@ class DriverOrder(business.DriverOrderBase):
 
 class DriverOrderScheduleLog(business.DriverOrderScheduleLogBase):
     """驾驶员订单记录"""
+
+
+class OrderEntrust(business.OrderEntrustBase):
+    """订单委托"""

@@ -48,6 +48,9 @@ def register_blueprint(app):
     from views.common import api
     app.register_blueprint(api)
 
+    from views.business import api
+    app.register_blueprint(api)
+
 
 def create_app():
     app = Flask(__name__)
