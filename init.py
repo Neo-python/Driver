@@ -58,7 +58,7 @@ def create_app():
     register_blueprint(app)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['WTF_CSRF_ENABLED'] = False
-    # app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_ECHO'] = True
     db.init_app(app)
     with app.app_context():
         db.create_all(app=app)

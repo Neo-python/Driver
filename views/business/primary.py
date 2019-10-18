@@ -1,6 +1,6 @@
 from flask import g, request
 from views.business import api
-from models.business import OrderEntrust, Order
+from models.business import OrderEntrust, Order, DriverOrder
 from forms import business as forms
 from plugins.HYplugins.common.authorization import login
 from plugins.HYplugins.common.ordinary import orm_func, join_key
@@ -15,7 +15,7 @@ def factory_order_list():
     :return:
     """
     user = g.user
-    form = forms.AcceptOrder(request.args).validate_()
+    form = forms.AcceptOrderListForm(request.args).validate_()
 
     query = OrderEntrust.query.filter_by(driver_uuid=user.uuid)
 
@@ -29,7 +29,7 @@ def factory_order_list():
     orders = join_key('order_uuid', orders)
 
     remove = {'order_uuid'}
-    funcs = [orm_func('order_info', orders=orders)]
+    funcs = [orm_func('batch_order_info', orders=orders)]
     data = paginate_info(paginate, items=[item.serialization(funcs=funcs, remove=remove) for item in paginate.items])
 
     return result_format(data=data)
@@ -39,6 +39,15 @@ def factory_order_list():
 @login()
 def order_accept():
     """接受订单"""
+    user = g.user
+    form = forms.AcceptOrderForm(formdata=request.args, user_uuid=user.uuid).validate_()
+    form.entrust.entrust_status = 1
+    OrderEntrust.query.filter(OrderEntrust.id != form.entrust.id).update({OrderEntrust.entrust_status: -1})
+    OrderEntrust.static_commit_()
+
+    DriverOrder(driver_uuid=user.uuid, factory_order_uuid=form.entrust.order_uuid)
+
+    return result_format()
 
 
 @api.route('/driver/order/checking/')

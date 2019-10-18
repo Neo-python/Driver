@@ -1,3 +1,8 @@
-from init import Redis
+# 查询orm类名
+from main import app
+from models.business import OrderEntrust
+app.app_context().push()
 
-print(Redis.keys())
+factory = OrderEntrust.query.first()
+
+factory.order
