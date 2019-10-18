@@ -41,11 +41,21 @@ def order_accept():
     """接受订单"""
     user = g.user
     form = forms.AcceptOrderForm(formdata=request.args, user_uuid=user.uuid).validate_()
-    form.entrust.entrust_status = 1
+    entrust = form.entrust
+
+    # 更新委托记录状态
+    entrust.entrust_status = 1
     OrderEntrust.query.filter(OrderEntrust.id != form.entrust.id).update({OrderEntrust.entrust_status: -1})
     OrderEntrust.static_commit_()
 
-    DriverOrder(driver_uuid=user.uuid, factory_order_uuid=form.entrust.order_uuid)
+    # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
+    driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid).direct_flush_()
+    driver_order.set_attrs(entrust.order.serialization())
+
+    # 记录驾驶员订单编号
+    entrust.order.driver_order_uuid = driver_order.order_uuid
+
+    driver_order.direct_commit_()
 
     return result_format()
 
