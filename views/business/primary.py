@@ -3,6 +3,7 @@ from views.business import api
 from models.business import OrderEntrust, Order
 from forms import business as forms
 from plugins.HYplugins.common.authorization import login
+from plugins.HYplugins.common.ordinary import orm_func, join_key
 from plugins.HYplugins.common.ordinary import result_format, paginate_info
 
 
@@ -25,8 +26,11 @@ def factory_order_list():
     paginate = query.paginate(form.page.data, form.limit.data, error_out=False)
 
     orders = Order.query.filter(Order.order_uuid.in_([item.order_uuid for item in paginate.items])).all()
+    orders = join_key('order_uuid', orders)
 
-    data = paginate_info(paginate, items=[item.serialization() for item in paginate.items])
+    remove = {'order_uuid'}
+    funcs = [orm_func('order_info', orders=orders)]
+    data = paginate_info(paginate, items=[item.serialization(funcs=funcs, remove=remove) for item in paginate.items])
 
     return result_format(data=data)
 
