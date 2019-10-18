@@ -1,4 +1,6 @@
+import config
 from flask import g, request
+from init import core_api
 from views.business import api
 from models.business import OrderEntrust, Order, DriverOrder
 from forms import business as forms
@@ -56,6 +58,11 @@ def order_accept():
     entrust.order.driver_order_uuid = driver_order.order_uuid
 
     driver_order.direct_commit_()
+
+    core_api.batch_sms(template_id=config.SMS_TEMPLATE_REGISTERED['driver_accept_order'],
+                       phone_list=[entrust.order.factory.phone, entrust.managers.phone],
+                       params=[entrust.order_uuid]
+                       )
 
     return result_format()
 
