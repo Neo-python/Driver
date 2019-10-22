@@ -2,7 +2,7 @@ import config
 from flask import request, g
 from views.common import api
 from init import Redis, core_api
-from forms.common.primary import SMSCodeForm
+from forms.common.primary import SMSCodeForm, PositionDistanceForm
 from plugins.HYplugins.common import ordinary
 from plugins.HYplugins.common.authorization import login, auth
 from plugins.HYplugins.error import ViewException
@@ -43,3 +43,14 @@ def send_sms():
 
     return core_api.send_sms(phone=form.phone.data, code=code,
                              template_id=config.SMS_TEMPLATE_REGISTERED[form.genre.data])
+
+
+@api.route('/position/distance/', methods=['POST'])
+@login()
+def position_distance():
+    """计算位置距离
+    :return:
+    """
+    form = PositionDistanceForm().validate_()
+
+    return core_api.position_distance(origin=form.origin.data, destinations=form.destinations.data)
