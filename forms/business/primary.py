@@ -21,7 +21,7 @@ class AcceptOrderForm(BaseForm, OrderUuidField):
         """检验单号"""
 
         self.entrust = OrderEntrust.query.filter_by(order_uuid=self.order_uuid.data, driver_uuid=self.user_uuid).first()
-        
+
         if not self.entrust:
             raise wtforms.ValidationError(message='此订单无法被您接单,如有疑问,请联系管理员.')
 
@@ -29,3 +29,11 @@ class AcceptOrderForm(BaseForm, OrderUuidField):
         status = query.filter(OrderEntrust.entrust_status != 0).count()
         if status:
             raise wtforms.ValidationError(message='当前订单已被锁定,已无法接单.')
+
+
+class OrderAdvanceForm(BaseForm, OrderUuidField):
+    """订单跟进"""
+
+
+class OrderCancelForm(BaseForm, OrderUuidField):
+    """订单取消"""

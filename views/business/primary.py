@@ -56,6 +56,7 @@ def order_accept():
 
     # 记录驾驶员订单编号
     entrust.order.driver_order_uuid = driver_order.order_uuid
+    entrust.order.schedule = 1
 
     driver_order.direct_commit_()
 
@@ -86,15 +87,17 @@ def driver_order_advance():
     订单进度+1
     :return: 返回订单进度
     """
-    # driver_order_id = request.get_json(force=True).get('driver_order_id')
-    # driver_order = DriverOrder.query.with_for_update(of=DriverOrder).filter_by(id=driver_order_id,
-    #                                                                            user_id=g.user['id']).first_or_404()
-    # if driver_order.driver_schedule < 5:
-    #     driver_order.driver_schedule = driver_order.driver_schedule + 1
-    #     driver_order.direct_update_()
-    #     return common.result_format(data={"driver_schedule": driver_order.driver_schedule})
-    # else:
-    #     return common.result_format(error_code=4011, message="订单进度无法推进!")
+
+    form = forms.OrderAdvanceForm().validate_()
+
+    driver_order = DriverOrder.query.with_for_update(of=DriverOrder).filter_by(order_uuid=form.order_uuid.data,
+                                                                               driver_uuid=g.user.uuid).first_or_404()
+    if driver_order.driver_schedule < 5:
+        driver_order.driver_schedule = driver_order.driver_schedule + 1
+        driver_order.direct_update_()
+        return result_format(data={"driver_schedule": driver_order.driver_schedule})
+    else:
+        return result_format(error_code=4011, message="订单进度无法推进!")
 
 
 @api.route('/driver/order/cancel/', methods=['DELETE'])
@@ -108,8 +111,9 @@ def driver_order_cancel():
     增加驾驶员订单状态日志
     :return:
     """
-    # driver_order_id = request.args.get('driver_order_id', default=None, type=int)
-    # driver_order = DriverOrder.query.filter_by(id=driver_order_id, user_id=g.user['id']).first_or_404()
-    # driver_order.driver_schedule = 99
-    # driver_order.direct_update_()
-    # return common.result_format()
+    form = forms.OrderCancelForm(request.args).validate_()
+
+    driver_order = DriverOrder.query.filter_by(order_uuid=form.order_uuid.data, driver_uuid=g.user.uuid).first_or_404()
+    driver_order.driver_schedule = -1
+    driver_order.direct_update_()
+    return result_format()
