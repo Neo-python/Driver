@@ -1,7 +1,7 @@
 import wtforms
 from wtforms.validators import DataRequired, Length, NumberRange, InputRequired, Optional
 from models.business import OrderEntrust
-from plugins.HYplugins.form import BaseForm, ListPage
+from plugins.HYplugins.form import BaseForm, ListPage, InputRequired
 from plugins.HYplugins.form.fields import IdSortField, OrderUuidField
 from plugins.HYplugins.form.validators_message import ValidatorsMessage as VM
 
@@ -37,3 +37,16 @@ class OrderAdvanceForm(BaseForm, OrderUuidField):
 
 class OrderCancelForm(BaseForm, OrderUuidField):
     """订单取消"""
+
+
+class OrderInfoForm(BaseForm, OrderUuidField):
+    """订单详情"""
+
+
+class OrderListForm(BaseForm, ListPage):
+    """订单列表"""
+
+    order_status = wtforms.IntegerField(validators=[
+        InputRequired(message=VM.say('required', '订单状态')),
+        NumberRange(min=-1, max=2, message=VM.say('system_number', -1, 2))
+    ])

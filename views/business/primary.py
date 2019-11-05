@@ -68,20 +68,56 @@ def order_accept():
     return result_format()
 
 
-@api.route('/driver/order/checking/')
+@api.route('/order/list/')
 @login()
-def driver_order_checking():
-    """驾驶员订单检查"""
-    # driver_order_id = request.args.get('driver_order_id', default=None, type=int)
-    # driver_order = DriverOrder.query.filter_by(id=driver_order_id, user_id=g.user['id']).first_or_404()
-    #
-    # data = driver_order.serialization(remove={'driver_schedule'}, funcs=[('order_infos', tuple(), dict())])
-    # return common.result_format(data=data)
+def order_list():
+    """订单列表"""
+    form = forms.OrderListForm(request.args).validate_()
+
+    order_status = form.order_status.data
+
+    query = DriverOrder.query.filter_by(driver_uuid=g.user.uuid)
+
+    if order_status == -1:
+        query = query.filter(DriverOrder.driver_schedule == -1)
+
+    elif order_status == 0:
+        # 查询全部订单
+        pass
+
+    elif order_status == 1:
+        # 订单正在处理中
+        query = query.filter(DriverOrder.driver_schedule > 0, DriverOrder.driver_schedule < 6)
+
+    elif order_status == 2:
+        # 订单已完成
+        query = query.filter(DriverOrder.driver_schedule == 6)
+
+    paginate = query.paginate(page=form.page.data, per_page=form.limit.data, error_out=False)
+
+    items = [item.serialization(funcs=[('order_infos', tuple(), dict())]) for item in paginate.items]
+
+    data = paginate_info(paginate, items=items)
+
+    return result_format(data=data)
 
 
-@api.route('/driver/order/advance/', methods=['POST'])
+@api.route('/order/info/')
 @login()
-def driver_order_advance():
+def order_info():
+    """订单详情"""
+
+    form = forms.OrderInfoForm(request.args).validate_()
+
+    order = DriverOrder.query.filter_by(order_uuid=form.order_uuid.data, driver_uuid=g.user.uuid).first_or_404()
+
+    data = order.serialization(funcs=[('order_infos', tuple(), dict())])
+    return result_format(data=data)
+
+
+@api.route('/order/advance/', methods=['POST'])
+@login()
+def order_advance():
     """驾驶员订单状态推进
     检查订单进度是否未达到已送达状态,并且不处于"已取消"的订单状态
     订单进度+1
@@ -100,9 +136,9 @@ def driver_order_advance():
         return result_format(error_code=4011, message="订单进度无法推进!")
 
 
-@api.route('/driver/order/cancel/', methods=['DELETE'])
+@api.route('/order/cancel/', methods=['DELETE'])
 @login()
-def driver_order_cancel():
+def order_cancel():
     """驾驶员订单取消
     修改驾驶员订单状态
     修改驾驶员订单进度
