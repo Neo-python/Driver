@@ -3,10 +3,14 @@ from wtforms.validators import DataRequired, Length, NumberRange, InputRequired,
 from init import Redis
 from forms.fields.primary import *
 from plugins.HYplugins.form import BaseForm
-from plugins.HYplugins.form.fields import PhoneField, CodeField, OpenIdField
+from plugins.HYplugins.form.fields import PhoneField, CodeField, WechatCodeField
 
 
-class RegisteredForm(BaseForm, PhoneField, CodeField, DriverNameField, NumberPlateField, OpenIdField):
+class SignInForm(BaseForm, WechatCodeField):
+    """登录"""
+
+
+class RegisteredForm(BaseForm, PhoneField, CodeField, DriverNameField, NumberPlateField, WechatCodeField):
     """注册"""
 
     def validate_code(self, *args):

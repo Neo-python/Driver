@@ -1,6 +1,6 @@
 import time
 from flask import g
-from init import Redis
+from init import Redis, core_api
 from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
@@ -11,16 +11,15 @@ from forms import user as forms
 @api.route('/sign_in/', methods=['POST'])
 def sign_in():
     """登录"""
-    # open_id = wechat_api.get_open_id()
-    open_id = 'xxxneoxxx1'
-    #
-    user = Driver.query.filter_by(open_id=open_id).first()
+    form = forms.SignInForm().validate_()
+
+    user = Driver.query.filter_by(open_id=form.open_id).first()
     #
     if user:  # 用户信息存在,并且用户类型已经选择
 
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
     else:
-        return result_format(error_code=4001, message='客户未注册', data={'open_id': open_id})
+        return result_format(error_code=4001, message='客户未注册')
 
 
 @api.route('/refresh_token/')
@@ -46,11 +45,14 @@ def registered():
     :return:
     """
 
-    data = forms.RegisteredForm().validate_().data
+    form = forms.RegisteredForm().validate_()
+
+    data = form.data
 
     data.pop('code')
+    data.pop('wechat_code')
 
-    Driver(**data).direct_commit_()
+    Driver(open_id=form.open_id, **data).direct_commit_()
 
     return result_format()
 
