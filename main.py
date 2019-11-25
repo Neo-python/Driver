@@ -16,5 +16,11 @@ def view_error(error):
     return jsonify(error.info)
 
 
+@app.errorhandler(500)
+def server_error(error):
+    """服务器错误"""
+    return jsonify({"error_code": 5099, "message": str(error)})
+
+
 if __name__ == '__main__':
     app.run(port=8092, host='0.0.0.0', debug=True)
