@@ -133,7 +133,7 @@ def order_advance():
         driver_order.direct_update_()
         return result_format(data={"driver_schedule": driver_order.driver_schedule})
     else:
-        return result_format(error_code=4011, message="订单进度无法推进!")
+        return result_format(error_code=5200, message="订单进度无法推进!")
 
 
 @api.route('/order/cancel/', methods=['DELETE'])
