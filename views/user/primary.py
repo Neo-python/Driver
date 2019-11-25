@@ -1,6 +1,6 @@
 import time
 from flask import g
-from init import Redis, core_api
+from init import Redis
 from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth

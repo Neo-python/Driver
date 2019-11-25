@@ -1,5 +1,4 @@
-import wtforms
-from wtforms.validators import DataRequired, Length, NumberRange, InputRequired, Optional
+from wtforms.validators import Optional
 from init import Redis
 from forms.fields.primary import *
 from plugins.HYplugins.form import BaseForm
