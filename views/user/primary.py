@@ -1,6 +1,6 @@
 import time
 from flask import g
-from init import Redis
+from init import Redis, core_api
 from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
@@ -52,7 +52,8 @@ def registered():
     data.pop('wechat_code')
 
     Driver(open_id=form.open_id, **data).direct_commit_()
-
+    Redis.delete(form.redis_key)  # 删除验证码
+    core_api.notice_sms(template_id="484145", params=[form.name.data, form.number_plate.data])  # 通知管理员注册完成
     return result_format()
 
 
