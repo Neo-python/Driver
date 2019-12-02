@@ -1,9 +1,11 @@
 import time
 from flask import g
+from sqlalchemy.exc import IntegrityError
 from init import Redis, core_api
 from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
+from plugins.HYplugins.error import ViewException
 from models.user import Driver
 from forms import user as forms
 
@@ -14,7 +16,7 @@ def sign_in():
     form = forms.SignInForm().validate_()
     user = Driver.query.filter_by(open_id=form.open_id).first()
 
-    if user:  # 用户信息存在,并且用户类型已经选择
+    if user:
 
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
     else:
@@ -50,11 +52,13 @@ def registered():
 
     data.pop('code')
     data.pop('wechat_code')
-
-    Driver(open_id=form.open_id, **data).direct_commit_()
+    try:
+        driver = Driver(open_id=form.open_id, **data).direct_commit_()
+    except IntegrityError as err:
+        raise ViewException(error_code=1001, message="用户已注册,请直接登录!")
     Redis.delete(form.redis_key)  # 删除验证码
     core_api.notice_sms(template_id="484145", params=[form.name.data, form.number_plate.data])  # 通知管理员注册完成
-    return result_format()
+    return result_format(data={'token': driver.generate_token(), 'user_info': driver.serialization()})
 
 
 @api.route('/driver/info/')
