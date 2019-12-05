@@ -23,4 +23,4 @@ def server_error(error):
 
 
 if __name__ == '__main__':
-    app.run(port=8092, host='0.0.0.0', debug=True)
+    app.run(port=8092, debug=True)

@@ -19,7 +19,7 @@ def factory_order_list():
     user = g.user
     form = forms.AcceptOrderListForm(request.args).validate_()
 
-    query = OrderEntrust.query.filter_by(driver_uuid=user.uuid)
+    query = OrderEntrust.query.filter_by(driver_uuid=user.uuid, entrust_status=0)
 
     if form.create_time_sort is not None:
         if form.create_time_sort.data == 0:
@@ -52,7 +52,12 @@ def order_accept():
 
     # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
     driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid).direct_flush_()
-    driver_order.set_attrs(entrust.order.serialization())
+    data = entrust.order.serialization()
+    data.pop('create_time', '')
+    data.pop('id', '')
+    data.pop('status', '')
+    data.pop('order_uuid', '')
+    driver_order.set_attrs(data)
 
     # 记录驾驶员订单编号
     entrust.order.driver_order_uuid = driver_order.order_uuid
