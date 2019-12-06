@@ -147,6 +147,7 @@ def order_cancel():
     """驾驶员订单取消
     修改驾驶员订单状态
     修改驾驶员订单进度
+    恢复委托订单所有驾驶员订单的接待状态为0
     "driver_order_receive_set"触发器将会:
     恢复厂家订单状态
     增加驾驶员订单状态日志
@@ -156,5 +157,9 @@ def order_cancel():
 
     driver_order = DriverOrder.query.filter_by(order_uuid=form.order_uuid.data, driver_uuid=g.user.uuid).first_or_404()
     driver_order.driver_schedule = -1
+
+    # 恢复委托订单所有驾驶员订单的接待状态为0
+    OrderEntrust.query.filter_by(order_uuid=driver_order.factory_order_uuid).update({OrderEntrust.entrust_status: 0})
+
     driver_order.direct_update_()
     return result_format()
