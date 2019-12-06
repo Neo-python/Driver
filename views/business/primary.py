@@ -1,8 +1,8 @@
 import config
 from flask import g, request
 from init import core_api
+from views import OrderEntrust, Order, DriverOrder
 from views.business import api
-from models.business import OrderEntrust, Order, DriverOrder
 from forms import business as forms
 from plugins.HYplugins.common.authorization import login
 from plugins.HYplugins.common.ordinary import orm_func, join_key

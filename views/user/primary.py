@@ -2,20 +2,19 @@ import time
 from flask import g
 from sqlalchemy.exc import IntegrityError
 from init import Redis, core_api
+from views import Driver
 from views.user import api
 from plugins.HYplugins.common import result_format
 from plugins.HYplugins.common.authorization import login, auth
 from plugins.HYplugins.error import ViewException
-from models.user import Driver
 from forms import user as forms
 
 
 @api.route('/sign_in/', methods=['POST'])
 def sign_in():
     """登录"""
-    # form = forms.SignInForm().validate_()
-    # user = Driver.query.filter_by(open_id=form.open_id).first()
-    user = Driver.query.first()
+    form = forms.SignInForm().validate_()
+    user = Driver.query.filter_by(open_id=form.open_id).first()
 
     if user:
 
