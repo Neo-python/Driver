@@ -72,7 +72,8 @@ def order_accept():
     OrderEntrust.static_commit_()
 
     # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
-    driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid)
+    driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid,
+                               phone=entrust.order.phone).direct_flush_()
     data = entrust.order.serialization()
     data.pop('create_time', '')
     data.pop('id', '')
@@ -81,7 +82,7 @@ def order_accept():
     driver_order.set_attrs(data)
 
     # 记录驾驶员订单编号
-    entrust.order.driver_order_uuid = driver_order.driver_uuid
+    entrust.order.driver_order_uuid = driver_order.order_uuid
     entrust.order.schedule = 1
 
     driver_order.direct_commit_()
