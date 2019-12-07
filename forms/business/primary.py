@@ -16,24 +16,24 @@ class AcceptOrderInfoForm(BaseForm):
     entrust_id = wtforms.IntegerField(validators=[DataRequired(message=VM.say('required', '委托单编号'))])
 
 
-class AcceptOrderForm(BaseForm, OrderUuidField):
+class AcceptOrderForm(BaseForm):
     """驾驶员接单"""
+
+    entrust_id = wtforms.IntegerField(validators=[DataRequired(message=VM.say('required', '委托单编号'))])
 
     def __init__(self, user_uuid, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user_uuid = user_uuid
 
-    def validate_order_uuid(self, *args):
+    def validate_entrust_id(self, *args):
         """检验单号"""
 
-        self.entrust = OrderEntrust.query.filter_by(order_uuid=self.order_uuid.data, driver_uuid=self.user_uuid).first()
+        self.entrust = OrderEntrust.query.filter_by(id=self.entrust_id.data, driver_uuid=self.user_uuid).first()
 
         if not self.entrust:
             raise wtforms.ValidationError(message='此订单无法被您接单,如有疑问,请联系管理员.')
 
-        query = OrderEntrust.query.with_for_update(of=OrderEntrust).filter_by(order_uuid=self.order_uuid.data)
-        status = query.filter(OrderEntrust.entrust_status != 0).count()
-        if status:
+        if self.entrust.entrust_status != 0:
             raise wtforms.ValidationError(message='当前订单已被锁定,已无法接单.')
 
 

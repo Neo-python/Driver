@@ -66,7 +66,9 @@ def order_accept():
 
     # 更新委托记录状态
     entrust.entrust_status = 1
-    OrderEntrust.query.filter(OrderEntrust.id != form.entrust.id).update({OrderEntrust.entrust_status: -1})
+    OrderEntrust.query.filter(OrderEntrust.id != form.entrust.id,
+                              OrderEntrust.order_uuid == form.entrust.order_uuid).update(
+        {OrderEntrust.entrust_status: -1})
     OrderEntrust.static_commit_()
 
     # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
