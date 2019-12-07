@@ -48,7 +48,7 @@ def factory_order_info():
     form = forms.AcceptOrderInfoForm(request.args).validate_()
     user = g.user
 
-    entrust = OrderEntrust.query.filter_by(driver_uuid=user.uuid, id=form.entrust_id).first()
+    entrust = OrderEntrust.query.filter_by(driver_uuid=user.uuid, id=form.entrust_id.data).first()
 
     if not entrust:
         raise ViewException(error_code=5011, message='您无权查看此订单.')
