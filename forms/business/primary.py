@@ -16,7 +16,6 @@ class AcceptOrderInfoForm(BaseForm):
     entrust_id = wtforms.IntegerField(validators=[DataRequired(message=VM.say('required', '委托单编号'))])
 
 
-
 class AcceptOrderForm(BaseForm, OrderUuidField):
     """驾驶员接单"""
 
