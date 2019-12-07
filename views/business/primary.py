@@ -81,7 +81,7 @@ def order_accept():
     driver_order.set_attrs(data)
 
     # 记录驾驶员订单编号
-    entrust.order.driver_order_uuid = driver_order.order_uuid
+    entrust.order.driver_order_uuid = driver_order.driver_uuid
     entrust.order.schedule = 1
 
     driver_order.direct_commit_()
