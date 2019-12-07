@@ -72,6 +72,7 @@ def order_accept():
     # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
     driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid).direct_flush_()
     data = entrust.order.serialization()
+    print(data)
     data.pop('create_time', '')
     data.pop('id', '')
     data.pop('status', '')
