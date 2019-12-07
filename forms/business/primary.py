@@ -1,5 +1,5 @@
 import wtforms
-from wtforms.validators import NumberRange
+from wtforms.validators import NumberRange, DataRequired
 from models.business import OrderEntrust
 from plugins.HYplugins.form import BaseForm, ListPage, InputRequired
 from plugins.HYplugins.form.fields import IdSortField, OrderUuidField
@@ -8,6 +8,13 @@ from plugins.HYplugins.form.validators_message import ValidatorsMessage as VM
 
 class AcceptOrderListForm(BaseForm, ListPage, IdSortField):
     """厂家委托单列表"""
+
+
+class AcceptOrderInfoForm(BaseForm):
+    """委托单详情"""
+
+    entrust_id = wtforms.IntegerField(validators=[DataRequired(message=VM.say('required', '委托单编号'))])
+
 
 
 class AcceptOrderForm(BaseForm, OrderUuidField):

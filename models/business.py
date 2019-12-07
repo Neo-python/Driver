@@ -23,3 +23,4 @@ class OrderEntrust(business.OrderEntrustBase):
 
     def order_info(self, result: dict, *args, **kwargs):
         """加入订单信息"""
+        result.update({'order_info': self.order.serialization()})

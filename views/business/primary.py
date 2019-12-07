@@ -7,6 +7,7 @@ from forms import business as forms
 from plugins.HYplugins.common.authorization import login
 from plugins.HYplugins.common.ordinary import orm_func, join_key
 from plugins.HYplugins.common.ordinary import result_format, paginate_info
+from plugins.HYplugins.error import ViewException
 
 
 @api.route('/factory/order/list/')
@@ -16,9 +17,9 @@ def factory_order_list():
     司机可以接的订单列表
     :return:
     """
-    user = g.user
-    form = forms.AcceptOrderListForm(request.args).validate_()
 
+    form = forms.AcceptOrderListForm(request.args).validate_()
+    user = g.user
     query = OrderEntrust.query.filter_by(driver_uuid=user.uuid, entrust_status=0)
 
     if form.create_time_sort is not None:
@@ -35,6 +36,24 @@ def factory_order_list():
     data = paginate_info(paginate, items=[item.serialization(funcs=funcs, remove=remove) for item in paginate.items])
 
     return result_format(data=data)
+
+
+@api.route('/factory/order/info/')
+@login()
+def factory_order_info():
+    """厂家订单详情
+    :return:
+    """
+
+    form = forms.AcceptOrderInfoForm(request.args).validate_()
+    user = g.user
+
+    entrust = OrderEntrust.query.filter_by(driver_uuid=user.uuid, id=form.entrust_id).first()
+
+    if not entrust:
+        raise ViewException(error_code=5011, message='您无权查看此订单.')
+
+    return result_format(data=entrust.serialization(funcs=[orm_func('order_info')]))
 
 
 @api.route('/order/accept/')
