@@ -11,7 +11,7 @@ from plugins.HYplugins.error import ViewException
 
 
 @api.route('/factory/order/list/')
-@login()
+@login(verify_status={'status': True})
 def factory_order_list():
     """厂家订单列表
     司机可以接的订单列表
@@ -32,7 +32,7 @@ def factory_order_list():
 
 
 @api.route('/factory/order/info/')
-@login()
+@login(verify_status={'status': True})
 def factory_order_info():
     """厂家订单详情
     :return:
@@ -44,16 +44,18 @@ def factory_order_info():
 
 
 @api.route('/order/accept/')
-@login()
+@login(verify_status={'status': True})
 def order_accept():
     """接受订单"""
 
     form = forms.AcceptOrderForm(request.args).validate_()
     user = g.user
     # # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
-    driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=form.order.order_uuid).direct_flush_()
+    driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=form.order.order_uuid,
+                               contact_phone=form.order.contact_phone).direct_flush_()
 
     order_data = form.order.serialization(remove={'create_time', 'id', 'status', 'order_uuid'})
+
     driver_order.set_attrs(order_data)
     driver_order.direct_commit_()
 
