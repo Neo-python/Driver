@@ -13,9 +13,9 @@ from forms import user as forms
 @api.route('/sign_in/', methods=['POST'])
 def sign_in():
     """登录"""
-    form = forms.SignInForm().validate_()
-    user = Driver.query.filter_by(open_id=form.open_id).first()
-
+    # form = forms.SignInForm().validate_()
+    # user = Driver.query.filter_by(open_id=form.open_id).first()
+    user = Driver.query.first()
     if user:
 
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
