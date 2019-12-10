@@ -1,6 +1,6 @@
 import config
 from flask import g, request
-from views import OrderEntrust, Order, DriverOrder
+from views import Order, DriverOrder
 from views.business import api
 from forms import business as forms
 from plugins import core_api
@@ -18,24 +18,24 @@ def factory_order_list():
     :return:
     """
 
-    form = forms.AcceptOrderListForm(request.args).validate_()
-    user = g.user
-    query = OrderEntrust.query.filter_by(driver_uuid=user.uuid, entrust_status=0)
-
-    if form.create_time_sort is not None:
-        if form.create_time_sort.data == 0:
-            query = query.order_by(OrderEntrust.id.desc())
-
-    paginate = query.paginate(form.page.data, form.limit.data, error_out=False)
-
-    orders = Order.query.filter(Order.order_uuid.in_([item.order_uuid for item in paginate.items])).all()
-    orders = join_key('order_uuid', orders)
-
-    remove = {'order_uuid'}
-    funcs = [orm_func('batch_order_info', orders=orders)]
-    data = paginate_info(paginate, items=[item.serialization(funcs=funcs, remove=remove) for item in paginate.items])
-
-    return result_format(data=data)
+    # form = forms.AcceptOrderListForm(request.args).validate_()
+    # user = g.user
+    # query = OrderEntrust.query.filter_by(driver_uuid=user.uuid, entrust_status=0)
+    #
+    # if form.create_time_sort is not None:
+    #     if form.create_time_sort.data == 0:
+    #         query = query.order_by(OrderEntrust.id.desc())
+    #
+    # paginate = query.paginate(form.page.data, form.limit.data, error_out=False)
+    #
+    # orders = Order.query.filter(Order.order_uuid.in_([item.order_uuid for item in paginate.items])).all()
+    # orders = join_key('order_uuid', orders)
+    #
+    # remove = {'order_uuid'}
+    # funcs = [orm_func('batch_order_info', orders=orders)]
+    # data = paginate_info(paginate, items=[item.serialization(funcs=funcs, remove=remove) for item in paginate.items])
+    #
+    # return result_format(data=data)
 
 
 @api.route('/factory/order/info/')
@@ -45,54 +45,54 @@ def factory_order_info():
     :return:
     """
 
-    form = forms.AcceptOrderInfoForm(request.args).validate_()
-    user = g.user
-
-    entrust = OrderEntrust.query.filter_by(driver_uuid=user.uuid, id=form.entrust_id.data).first()
-
-    if not entrust:
-        raise ViewException(error_code=5011, message='您无权查看此订单.')
-
-    return result_format(data=entrust.serialization(funcs=[orm_func('order_info')]))
+    # form = forms.AcceptOrderInfoForm(request.args).validate_()
+    # user = g.user
+    #
+    # entrust = OrderEntrust.query.filter_by(driver_uuid=user.uuid, id=form.entrust_id.data).first()
+    #
+    # if not entrust:
+    #     raise ViewException(error_code=5011, message='您无权查看此订单.')
+    #
+    # return result_format(data=entrust.serialization(funcs=[orm_func('order_info')]))
 
 
 @api.route('/order/accept/')
 @login()
 def order_accept():
     """接受订单"""
-    user = g.user
-    form = forms.AcceptOrderForm(formdata=request.args, user_uuid=user.uuid).validate_()
-    entrust = form.entrust
-
-    # 更新委托记录状态
-    entrust.entrust_status = 1
-    OrderEntrust.query.filter(OrderEntrust.id != form.entrust.id,
-                              OrderEntrust.order_uuid == form.entrust.order_uuid).update(
-        {OrderEntrust.entrust_status: -1})
-    OrderEntrust.static_commit_()
-
-    # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
-    driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid,
-                               phone=entrust.order.phone).direct_flush_()
-    data = entrust.order.serialization()
-    data.pop('create_time', '')
-    data.pop('id', '')
-    data.pop('status', '')
-    data.pop('order_uuid', '')
-    driver_order.set_attrs(data)
-
-    # 记录驾驶员订单编号
-    entrust.order.driver_order_uuid = driver_order.order_uuid
-    entrust.order.schedule = 1
-
-    driver_order.direct_commit_()
-
-    core_api.batch_sms(template_id=config.SMS_TEMPLATE_REGISTERED['driver_accept_order'],
-                       phone_list=[entrust.order.factory.phone, entrust.managers.phone],
-                       params=[entrust.order_uuid]
-                       )
-
-    return result_format()
+    # user = g.user
+    # form = forms.AcceptOrderForm(formdata=request.args, user_uuid=user.uuid).validate_()
+    # entrust = form.entrust
+    #
+    # # 更新委托记录状态
+    # entrust.entrust_status = 1
+    # OrderEntrust.query.filter(OrderEntrust.id != form.entrust.id,
+    #                           OrderEntrust.order_uuid == form.entrust.order_uuid).update(
+    #     {OrderEntrust.entrust_status: -1})
+    # OrderEntrust.static_commit_()
+    #
+    # # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
+    # driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=entrust.order_uuid,
+    #                            phone=entrust.order.phone).direct_flush_()
+    # data = entrust.order.serialization()
+    # data.pop('create_time', '')
+    # data.pop('id', '')
+    # data.pop('status', '')
+    # data.pop('order_uuid', '')
+    # driver_order.set_attrs(data)
+    #
+    # # 记录驾驶员订单编号
+    # entrust.order.driver_order_uuid = driver_order.order_uuid
+    # entrust.order.schedule = 1
+    #
+    # driver_order.direct_commit_()
+    #
+    # core_api.batch_sms(template_id=config.SMS_TEMPLATE_REGISTERED['driver_accept_order'],
+    #                    phone_list=[entrust.order.factory.phone, entrust.managers.phone],
+    #                    params=[entrust.order_uuid]
+    #                    )
+    #
+    # return result_format()
 
 
 @api.route('/order/list/')
@@ -181,7 +181,7 @@ def order_cancel():
     driver_order.driver_schedule = -1
 
     # 恢复委托订单所有驾驶员订单的接待状态为0
-    OrderEntrust.query.filter_by(order_uuid=driver_order.factory_order_uuid).update({OrderEntrust.entrust_status: 0})
+    # OrderEntrust.query.filter_by(order_uuid=driver_order.factory_order_uuid).update({OrderEntrust.entrust_status: 0})
 
     driver_order.direct_update_()
     return result_format()
