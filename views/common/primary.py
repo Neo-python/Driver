@@ -1,8 +1,8 @@
 import config
 from flask import request, g
 from views.common import api
-from init import Redis, core_api
 from forms.common.primary import SMSCodeForm, PositionDistanceForm
+from plugins import Redis, core_api
 from plugins.HYplugins.common import ordinary
 from plugins.HYplugins.common.authorization import login, auth
 

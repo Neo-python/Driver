@@ -1,5 +1,5 @@
 from flask import jsonify
-from init import create_app
+from plugins import create_app
 from plugins.HYplugins.error import ViewException
 
 app = create_app()
