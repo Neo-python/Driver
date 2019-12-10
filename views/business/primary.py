@@ -50,7 +50,10 @@ def order_accept():
 
     form = forms.AcceptOrderForm(request.args).validate_()
     user = g.user
-    # # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
+
+    # 更新订单状态
+    form.order.schedule = 1
+    # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
     driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=form.order.order_uuid,
                                contact_phone=form.order.contact_phone).direct_flush_()
 
@@ -93,7 +96,7 @@ def order_list():
 
     paginate = query.paginate(page=form.page.data, per_page=form.limit.data, error_out=False)
 
-    items = [item.serialization(funcs=[('order_infos', tuple(), dict())]) for item in paginate.items]
+    items = [item.serialization() for item in paginate.items]
 
     data = paginate_info(paginate, items=items)
 
@@ -109,8 +112,7 @@ def order_info():
 
     order = DriverOrder.query.filter_by(order_uuid=form.order_uuid.data, driver_uuid=g.user.uuid).first_or_404()
 
-    data = order.serialization(funcs=[('order_infos', tuple(), dict())])
-    return result_format(data=data)
+    return result_format(data=order.customize_serialization())
 
 
 @api.route('/order/advance/', methods=['POST'])
@@ -126,10 +128,14 @@ def order_advance():
 
     driver_order = DriverOrder.query.with_for_update(of=DriverOrder).filter_by(order_uuid=form.order_uuid.data,
                                                                                driver_uuid=g.user.uuid).first_or_404()
-    if driver_order.driver_schedule < 5:
+    if 4 > driver_order.driver_schedule > 0:
         driver_order.driver_schedule = driver_order.driver_schedule + 1
         driver_order.direct_update_()
         return result_format(data={"driver_schedule": driver_order.driver_schedule})
+    elif driver_order.driver_schedule == 4:  # 订单完成,修改厂家订单状态
+        driver_order.driver_schedule = driver_order.driver_schedule + 1
+        driver_order.order.schedule = 2
+        driver_order.direct_update_()
     else:
         return result_format(error_code=5200, message="订单进度无法推进!")
 
