@@ -1,6 +1,7 @@
 import config
 import redis
 from flask import Flask
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from pymysql import install_as_MySQLdb
 from plugins.HYplugins.orm import db
 from plugins.HYplugins.core.primary import CoreApi
@@ -18,6 +19,7 @@ wechat_api = wechat.WechatApi(app_id=config.APP_ID, app_secret=config.APP_SECRET
 # redis
 pool = redis.ConnectionPool(host=config.REDIS_HOST, port=config.REDIS_PORT, db=config.REDIS_DB, decode_responses=True)
 Redis = redis.StrictRedis(connection_pool=pool)
+serializer = Serializer(secret_key=config.SECRET_KEY, expires_in=60 * 60 * 24 * 30)
 
 
 def register_blueprint(app):
