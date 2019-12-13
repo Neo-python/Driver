@@ -16,11 +16,12 @@ def sign_in():
     # form = forms.SignInForm().validate_()
     # user = Driver.query.filter_by(open_id=form.open_id).first()
     user = Driver.query.first()
-    if user:
-
-        return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
-    else:
+    if not user:
         return result_format(error_code=5011, message='客户未注册')
+    elif user.verify < -1:
+        return result_format(error_code=5004, message='账户目前被限制登录,如需登录请联系管理员.')
+    else:
+        return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
 
 
 @api.route('/refresh_token/')
