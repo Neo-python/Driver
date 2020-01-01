@@ -46,7 +46,7 @@ def factory_order_info():
 @api.route('/order/accept/')
 @login(verify_status={'status': True})
 def order_accept():
-    """接受订单"""
+    """接受订单,绑定厂家订单"""
 
     form = forms.AcceptOrderForm(request.args).validate_()
     user = g.user
@@ -56,6 +56,8 @@ def order_accept():
     # 生成驾驶员订单,生成驾驶员订单编号,迁移厂家订单信息
     driver_order = DriverOrder(driver_uuid=user.uuid, factory_order_uuid=form.order.order_uuid,
                                contact_phone=form.order.contact_phone).direct_flush_()
+    # 绑定驾驶员订单编号
+    form.order.driver_order_uuid = driver_order.order_uuid
 
     order_data = form.order.serialization(remove={'create_time', 'id', 'status', 'order_uuid'})
 
