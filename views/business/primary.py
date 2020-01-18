@@ -11,7 +11,7 @@ from plugins.HYplugins.error import ViewException
 
 
 @api.route('/factory/order/list/')
-# @login(verify_status={'status': True})
+@login(verify_status={'status': True})
 def factory_order_list():
     """厂家订单列表
     司机可以接的订单列表
