@@ -1,5 +1,5 @@
 import time
-from flask import g
+from flask import g, request
 from sqlalchemy.exc import IntegrityError
 from views import Driver
 from views.user import api
@@ -22,6 +22,17 @@ def sign_in():
         return result_format(error_code=5004, message='账户目前被限制登录,如需登录请联系管理员.')
     else:
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
+
+
+@api.route('/visitors/', methods=['GET'])
+def visitors():
+    """访客模式"""
+
+    user = Driver.query.filter_by(create_time="2028-01-01 12:00:00").first()
+    if user:
+        return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
+    else:
+        return result_format(data={'token': '', 'user_info': ''})
 
 
 @api.route('/refresh_token/')
