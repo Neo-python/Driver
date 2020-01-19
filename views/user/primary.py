@@ -1,5 +1,5 @@
 import time
-from flask import g, request
+from flask import g
 from sqlalchemy.exc import IntegrityError
 from views import Driver
 from views.user import api
@@ -24,11 +24,11 @@ def sign_in():
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
 
 
-@api.route('/visitors/', methods=['GET'])
+@api.route('/visitors/', methods=['POST'])
 def visitors():
     """访客模式"""
 
-    forms.VisitorsForm(request.args).validate_()
+    forms.VisitorsForm().validate_()
 
     user = Driver.query.filter_by(create_time="2028-01-01 12:00:00").first()
     if user:
