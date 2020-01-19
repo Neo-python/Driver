@@ -2,11 +2,15 @@ from wtforms.validators import Optional
 from forms.fields.primary import *
 from plugins import Redis
 from plugins.HYplugins.form import BaseForm
-from plugins.HYplugins.form.fields import PhoneField, CodeField, WechatCodeField
+from plugins.HYplugins.form.fields import PhoneField, CodeField, WechatCodeField, VisitorsParameterField
 
 
 class SignInForm(BaseForm, WechatCodeField):
     """登录"""
+
+
+class VisitorsForm(BaseForm, VisitorsParameterField):
+    """访客审核验证"""
 
 
 class RegisteredForm(BaseForm, PhoneField, CodeField, DriverNameField, NumberPlateField, WechatCodeField):

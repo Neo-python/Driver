@@ -28,6 +28,8 @@ def sign_in():
 def visitors():
     """访客模式"""
 
+    forms.VisitorsForm(request.args).validate_()
+
     user = Driver.query.filter_by(create_time="2028-01-01 12:00:00").first()
     if user:
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
