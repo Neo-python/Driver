@@ -34,7 +34,7 @@ def visitors():
     if user:
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
     else:
-        return result_format(data={'token': '', 'user_info': ''})
+        return result_format(error_code=5011, message="接口目前无法使用")
 
 
 @api.route('/refresh_token/')
