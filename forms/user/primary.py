@@ -12,6 +12,8 @@ class SignInForm(BaseForm, WechatCodeField):
 class VisitorsForm(BaseForm, VisitorsParameterField):
     """访客审核验证"""
 
+    server_name = '驾驶员端'
+
 
 class RegisteredForm(BaseForm, PhoneField, CodeField, DriverNameField, NumberPlateField, WechatCodeField):
     """注册"""
