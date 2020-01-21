@@ -135,9 +135,10 @@ def order_advance():
         driver_order.direct_update_()
         return result_format(data={"driver_schedule": driver_order.driver_schedule})
     elif driver_order.driver_schedule == 4:  # 订单完成,修改厂家订单状态
-        driver_order.driver_schedule = driver_order.driver_schedule + 1
+        driver_order.driver_schedule = 6
         driver_order.order.schedule = 2
         driver_order.direct_update_()
+        return result_format(message="订单已完成")
     else:
         return result_format(error_code=5200, message="订单进度无法推进!")
 
