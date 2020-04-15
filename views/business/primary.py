@@ -20,7 +20,7 @@ def factory_order_list():
 
     query = Order.query.filter_by(schedule=0)
     if form.create_time_sort is not None:
-        if form.create_time_sort.data == 1:
+        if form.create_time_sort.data == 0:
             query = query.order_by(Order.id.desc())
     paginate = query.paginate(form.page.data, form.limit.data, error_out=False)
 
