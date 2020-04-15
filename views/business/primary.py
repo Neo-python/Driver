@@ -5,9 +5,7 @@ from views.business import api
 from forms import business as forms
 from plugins import core_api
 from plugins.HYplugins.common.authorization import login
-from plugins.HYplugins.common.ordinary import orm_func, join_key
 from plugins.HYplugins.common.ordinary import result_format, paginate_info
-from plugins.HYplugins.error import ViewException
 
 
 @api.route('/factory/order/list/')
@@ -22,7 +20,7 @@ def factory_order_list():
 
     query = Order.query.filter_by(schedule=0)
     if form.create_time_sort is not None:
-        if form.create_time_sort.data == 0:
+        if form.create_time_sort.data == 1:
             query = query.order_by(Order.id.desc())
     paginate = query.paginate(form.page.data, form.limit.data, error_out=False)
 
