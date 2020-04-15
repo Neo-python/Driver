@@ -17,10 +17,12 @@ def factory_order_list():
     """
 
     form = forms.AcceptOrderListForm(request.args).validate_()
-
+    print(form.create_time_sort.data)
     query = Order.query.filter_by(schedule=0)
-    if form.create_time_sort is not None:
+    if form.create_time_sort.data is not None:
+        print(1)
         if form.create_time_sort.data == 0:
+            print(2)
             query = query.order_by(Order.id.desc())
     paginate = query.paginate(form.page.data, form.limit.data, error_out=False)
 
