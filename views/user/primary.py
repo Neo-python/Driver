@@ -24,6 +24,18 @@ def sign_in():
         return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
 
 
+@api.route('/sign_in/v2/')
+def sign_in_v2():
+    """假的登录接口"""
+    user = Driver.query.first()
+    # if not user:
+    #     return result_format(error_code=5011, message='客户未注册')
+    # elif user.verify < -1:
+    #     return result_format(error_code=5004, message='账户目前被限制登录,如需登录请联系管理员.')
+    # else:
+    return result_format(data={'token': user.generate_token(), 'user_info': user.serialization()})
+
+
 @api.route('/visitors/', methods=['POST'])
 def visitors():
     """访客模式"""
